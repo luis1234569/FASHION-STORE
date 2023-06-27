@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(left: 20),
             child: Text(
-              "Bienvenido a FASHION-STORE",
+              "Bienvenido, Nicole",
               style: TextStyle(
                 fontSize: 23,
                 fontWeight: FontWeight.bold,

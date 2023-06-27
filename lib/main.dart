@@ -1,5 +1,6 @@
 import 'package:fashon_stoke/pages/CartPage.dart';
 import 'package:fashon_stoke/pages/Coment.dart';
+import 'package:fashon_stoke/pages/FormComment.dart';
 import 'package:fashon_stoke/pages/Homepage.dart';
 import 'package:fashon_stoke/pages/ItemPage.dart';
 import 'package:fashon_stoke/pages/LoginPage.dart';
@@ -27,6 +28,8 @@ class MyApp extends StatelessWidget {
         "itemPage": (context) => ItemPage(),
         "perfilPage": (context) => PerfilPage(),
         "comentPage": (context) => ComentPage(),
+        "formCommentPage": (context) => FormComment(),
+
       },
     );
   }

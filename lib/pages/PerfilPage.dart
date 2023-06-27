@@ -65,7 +65,7 @@ class _PerfilPageState extends State<PerfilPage> {
             ),
             Container(
               child: Text(
-                "River_gg",
+                "Nicole",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

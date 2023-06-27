@@ -1,6 +1,29 @@
+import 'package:fashon_stoke/service/auth-service.dart';
 import 'package:flutter/material.dart';
+// import 'package:auth_buttons/auth_buttons.dart'
+//     show GoogleAuthButton, AuthButtonStyle, AuthButtonType, AuthIconType;
 
 class LoginPage extends StatelessWidget {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  String? _emailError;
+  String? _passwordError;
+
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Aquí puedes realizar las acciones de inicio de sesión
+      // utilizando los valores de los controladores de texto (_emailController.text, _passwordController.text)
+      // por ejemplo, puedes llamar a una función para realizar la autenticación
+      // y mostrar una notificación de éxito o error según el resultado.
+      // Puedes usar Firebase, una API REST, o cualquier otro método de autenticación que prefieras.
+      await login(emailController.text, passwordController.text);
+      print('logueado');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -9,19 +32,19 @@ class LoginPage extends StatelessWidget {
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 20),
-                child: Image.asset('images/logo.png'),
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                child: Image.asset("images/logo.png", height: 300),
               ),
               Container(
-                margin: EdgeInsets.symmetric(horizontal: 20),
-                padding: EdgeInsets.symmetric(horizontal: 15),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 height: 55,
                 decoration: BoxDecoration(
-                  color: Color(0xFFF5F9FD),
+                  color: const Color(0xFFF5F9FD),
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(0xFF475269).withOpacity(0.3),
+                      color: const Color(0xFF475269).withOpacity(0.3),
                       blurRadius: 5,
                       spreadRadius: 1,
                     ),
@@ -29,21 +52,31 @@ class LoginPage extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.person,
                       size: 27,
                       color: Color(0xFF475269),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Container(
-                      //margin: EdgeInsets. ,
                       width: 250,
                       child: TextFormField(
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          hintText: "Nombre de Usuario",
-                        ),
-                      ),
+                          controller: emailController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor ingresa tu correo';
+                            }
+
+                            if (!isValidEmail(value)) {
+                              return 'Por favor ingresa un correo valido';
+                            }
+
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Nombre de Usuario",
+                          )),
                     ),
                   ],
                 ),
@@ -66,17 +99,30 @@ class LoginPage extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.lock,
                       size: 27,
                       color: Color(0xFF475269),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Container(
                       //margin: EdgeInsets. ,
                       width: 250,
                       child: TextFormField(
-                        decoration: InputDecoration(
+                        controller: passwordController,
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Ingrese su contraseña XD..';
+                          }
+
+                          if (value.length < 6) {
+                            return 'Tiene que tener al menos 7 caracteres';
+                          }
+
+                          return null;
+                        },
+                        decoration: const InputDecoration(
                           border: InputBorder.none,
                           hintText: "Ingrese su contraseña XD..",
                         ),
@@ -91,7 +137,7 @@ class LoginPage extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () {},
-                  child: Text(
+                  child: const Text(
                     "Has olvidado tu contraseña",
                     style: TextStyle(
                       color: Color(0xFF475269),
@@ -101,10 +147,52 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
               ),
+              // const SizedBox(height: 24),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     TextButton(
+              //       onPressed: () async {
+              //         try {
+              //           await signInWithGoogleMen();
+              //           Navigator.pushNamed(context, "homePage");
+              //         } catch (e) {
+              //           ScaffoldMessenger.of(context).showSnackBar(
+              //             SnackBar(
+              //               content: Text('Error al iniciar sesión con Google'),
+              //             ),
+              //           );
+              //         }
+              //       },
+              //       child: Text(
+              //         "Google",
+              //         style: TextStyle(
+              //           color: Color(0xFF475269).withOpacity(0.8),
+              //           fontSize: 18,
+              //           fontWeight: FontWeight.w500,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+
               SizedBox(height: 40),
               InkWell(
-                onTap: () {
-                  Navigator.pushNamed(context, "homePage");
+                onTap: () async {
+                  bool registrationResult = await login(
+                    emailController.text,
+                    passwordController.text,
+                  );
+
+                  if (registrationResult) {
+                    Navigator.pushNamed(context, "homePage");
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Correo o contraseñas incorrectas'),
+                      ),
+                    );
+                  }
                 },
                 child: Container(
                   alignment: Alignment.center,
@@ -123,7 +211,7 @@ class LoginPage extends StatelessWidget {
                       )
                     ],
                   ),
-                  child: Text(
+                  child: const Text(
                     "Iniciar sesión",
                     style: TextStyle(
                       fontSize: 25,
@@ -146,14 +234,13 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.pushNamed(context, "registerPage");
                     },
                     child: Text(
                       "Crear cuenta",
                       style: TextStyle(
-                        color:
-                            Color.fromARGB(255, 59, 113, 230).withOpacity(0.8),
+                        color: Color(0xFF475269).withOpacity(0.8),
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
@@ -166,5 +253,13 @@ class LoginPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool isValidEmail(String value) {
+    // Expresión regular para validar el formato de un correo electrónico
+    final emailRegex = RegExp(
+        r'^[\w-]+(\.[\w-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$');
+
+    return emailRegex.hasMatch(value);
   }
 }
